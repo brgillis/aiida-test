@@ -49,24 +49,24 @@ def wf_linregress_with_errors(l_x: Iterable[Number],
         ym: float = divide(sum_array(multiply(l_y, l_w)), w)
         xym: float = divide(sum_array(multiply(l_x, l_y, l_w)), w)
 
-    dx2m = x2m - xm ** 2
-    dxym = xym - xm * ym
+    dx2m = subtract(x2m, square(xm))
+    dxym = subtract(xym, multiply(xm, ym))
 
     if not dx2m > 0:
         slope = np.inf
         intercept = np.nan
     else:
-        slope = dxym / dx2m
-        intercept = ym - xm * slope
+        slope = divide(dxym, dx2m)
+        intercept = subtract(ym, multiply(xm, slope))
 
     if dx2m <= 0 or w == 0:
         slope_err: float = np.inf
         intercept_err: float = np.nan
         slope_intercept_covar: float = np.nan
     else:
-        slope_err: float = np.sqrt(1. / (w * dx2m))
-        intercept_err: float = np.sqrt((1.0 + xm ** 2 / dx2m) / w)
-        slope_intercept_covar: float = -xm / (w * dx2m)
+        slope_err: float = sqrt(divide(1., multiply(w, dx2m)))
+        intercept_err: float = sqrt(divide(add(1.0, divide(square(xm), dx2m)), w))
+        slope_intercept_covar: float = divide(-xm, multiply(w, dx2m))
 
     return LinregressResults(slope=slope,
                              intercept=intercept,
@@ -74,23 +74,41 @@ def wf_linregress_with_errors(l_x: Iterable[Number],
                              intercept_err=intercept_err,
                              slope_intercept_covar=slope_intercept_covar)
 
-def divide(x: Number, y: Number) -> Number:
+def add(x, y, *args):
+    """Adds two or more values
+    """
+    s = x+y
+    for arg in args:
+        s += arg
+    return s
+
+def subtract(x, y):
+    """Subtracts one value from another
+    """
+    return x - y
+
+def multiply(x, y, *args):
+    """Multiplies two or more values
+    """
+    p = x*y
+    for arg in args:
+        p *= arg
+    return p
+
+def divide(x, y):
     """Divides one value by another
     """
     return x / y
 
-def square(x: Number) -> Number:
+def square(x):
     """Squares a value
     """
     return x ** 2
 
-def multiply(x: Number, y: Number, *args: Number) -> Number:
-    """Multiplies two or more values
+def sqrt(x):
+    """Gets the square root of a value
     """
-    p: Number = x*y
-    for arg in args:
-        p *= arg
-    return p
+    return np.sqrt(x)
 
 def sum_array(l_x: Iterable[Number]) -> float:
     """Calculates the sum of an array, excluding any NaN values
