@@ -36,7 +36,7 @@ def linregress_with_errors(l_x: Iterable[Number],
     -------
     LinregressResults
     """
-    
+
     # Silently coerce input to numpy arrays
     l_x = np.asarray(l_x)
     l_y = np.asarray(l_y)
@@ -62,7 +62,7 @@ def linregress_with_errors(l_x: Iterable[Number],
     dx2m = x2m - xm ** 2
     dxym = xym - xm * ym
 
-    if not (dx2m > 0):
+    if not dx2m > 0:
         slope = np.inf
         intercept = np.nan
     else:
